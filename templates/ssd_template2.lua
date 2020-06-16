@@ -6,28 +6,12 @@ function hex2rgb(hex)
 end
 
 -- HTML colors
-color0="#081734"
-color1="#6D3966"
-color2="#2A536D"
-color3="#6C4D71"
-color4="#9B3C70"
-color5="#974174"
-color6="#3F7486"
-color7="#a1c5c7"
-color8="#70898b"
-color9="#6D3966"
-color10="#2A536D"
-color11="#6C4D71"
-color12="#9B3C70"
-color13="#974174"
-color14="#3F7486"
-color15="#a1c5c7"
-color66="#081734"
+COLORFIELD
 t0= 1
 t0_border= 0.3
 r0, g0, b0 = hex2rgb(color0)
 t1= 1
-r1, g1, b1 = hex2rgb(color2)
+r1, g1, b1 = hex2rgb(color1)
 t2= 1
 r2, g2, b2 = hex2rgb(color7)
 t3= 1
@@ -108,11 +92,19 @@ function draw_ssd(cr, w, h, pathname, pathway)
 		cairo_rectangle (cr,c2_x+10+6*i,c2_y+50, 4, 7);
 		cairo_fill(cr)
     end
+    
+    -- Disk usage
+    used_home = conky_parse("${fs_used /home}")
+    size_home = conky_parse("${fs_size /home}")
+    ct = cairo_text_extents_t:create()
+    cairo_text_extents(cr,"HOME "..used_home.."/"..size_home,ct)
+    cairo_move_to(cr,w/2-ct.width/2,h/2+ct.height/2 +50)
+    cairo_show_text(cr,"HOME "..used_home.."/"..size_home)
 	
 end
 
 function draw_widgets(cr)
-	local w,h=conky_window.width,conky_window.height
+	local w,h=conky_window.width,conky_window.height-10
 	cairo_select_font_face (cr, "Dejavu Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
 	cairo_set_font_size(cr, 10)
 	

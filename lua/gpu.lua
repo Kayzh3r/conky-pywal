@@ -6,23 +6,23 @@ function hex2rgb(hex)
 end
 
 -- HTML colors
-color0="#33304b"
-color1="#D76C84"
-color2="#4CA293"
-color3="#6AA28E"
-color4="#9EA48A"
-color5="#E2A188"
-color6="#9CCB96"
-color7="#e7dbc0"
-color8="#a19986"
-color9="#D76C84"
-color10="#4CA293"
-color11="#6AA28E"
-color12="#9EA48A"
-color13="#E2A188"
-color14="#9CCB96"
-color15="#e7dbc0"
-color66="#33304b"
+color0="#081734"
+color1="#6D3966"
+color2="#2A536D"
+color3="#6C4D71"
+color4="#9B3C70"
+color5="#974174"
+color6="#3F7486"
+color7="#a1c5c7"
+color8="#70898b"
+color9="#6D3966"
+color10="#2A536D"
+color11="#6C4D71"
+color12="#9B3C70"
+color13="#974174"
+color14="#3F7486"
+color15="#a1c5c7"
+color66="#081734"
 t0= 1
 t0_border= 0.3
 r0, g0, b0 = hex2rgb(color0)
@@ -45,21 +45,21 @@ end
 
 function draw_circle_background(cr, w, h)
 	cairo_set_source_rgba(cr, r0, g0, b0, t0)
-	cairo_arc(cr,w/2,h/2,52,0*math.pi/180,360*math.pi/180)
+	cairo_arc(cr,w/2,(h)/2,52,0*math.pi/180,360*math.pi/180)
     cairo_fill(cr)
 end
 
 function draw_circle_background_border(cr, w, h)
 	cairo_set_source_rgba(cr, r0, g0, b0, t0_border)
 	cairo_set_line_width(cr, 2)
-	cairo_arc(cr,w/2,h/2,52,0*math.pi/180,360*math.pi/180)
+	cairo_arc(cr,w/2,(h)/2,52,0*math.pi/180,360*math.pi/180)
     cairo_stroke(cr)
 end
 
 function draw_gpu(cr, w, h)
 	local c1=66
 	local c2_x=(w-c1)/2
-	local c2_y=(h-c1)/2
+	local c2_y=(h-c1-60)/2
 	local c3_x=w/2
 	local c3_y=h/2
 	cairo_set_source_rgba(cr, r1, g1, b1, t1)
@@ -98,15 +98,50 @@ function draw_gpu(cr, w, h)
     cairo_stroke(cr)
     end
     --Circle
-    cairo_arc(cr,w/2+12,h/2+1,19,0*math.pi/180,360*math.pi/180)
+    cairo_arc(cr,w/2+12,(h-60)/2+1,19,0*math.pi/180,360*math.pi/180)
     cairo_stroke(cr)
     --Hertz text
 	cairo_set_source_rgba(cr, r2, g2, b2, t2)
 	ct = cairo_text_extents_t:create()
 	hz=conky_parse("${exec xrandr | grep '*' | tr ' ' '\n' | grep '*' | tr -d '*' | awk '{printf(\"%d\\\n\",$1 + 0.5)}'}")
 	cairo_text_extents(cr,hz .. "Hz",ct)
-    cairo_move_to(cr,w/2+12-ct.width/2,h/2+1+ct.height/2)
+    cairo_move_to(cr,w/2+12-ct.width/2,(h-60)/2+1+ct.height/2)
     cairo_show_text(cr,hz .. "Hz")
+end
+
+function print_stats(cr, w, h)
+    cairo_set_source_rgba(cr, r2, g2, b2, t2)
+    -- GPU Usage
+    used_gpu = conky_parse("${exec cat /sys/class/drm/card0/device/gpu_busy_percent}")
+    ct = cairo_text_extents_t:create()
+    cairo_text_extents(cr,"GPU Usage " ..used_gpu.."%",ct)
+    cairo_move_to(cr,w/2-ct.width/2,h/2+ct.height/2 +15)
+    cairo_show_text(cr,"GPU Usage "..used_gpu.."%")
+    
+    -- VRAM
+    used_ram = conky_parse("${exec cat /sys/class/drm/card0/device/mem_busy_percent}")
+    ct = cairo_text_extents_t:create()
+    cairo_text_extents(cr,"GPU Memory "..used_ram.."%",ct)
+    cairo_move_to(cr,w/2-ct.width/2,h/2+ct.height/2 +30)
+    cairo_show_text(cr,"GPU Memory "..used_ram.."%")
+    
+    -- GPU Temp
+    temp_ = conky_parse("${exec cat /sys/class/hwmon/hwmon0/temp1_input}")
+    temp = tostring(tonumber(temp_)/1000)
+    ct = cairo_text_extents_t:create()
+    cairo_text_extents(cr,"GPU Temp "..temp.." C",ct)
+    cairo_move_to(cr,w/2-ct.width/2,h/2+ct.height/2 +45)
+    cairo_show_text(cr,"GPU Temp "..temp.." C")
+    
+    -- GPU Fan
+    fan    = tonumber(conky_parse("${exec cat /sys/class/hwmon/hwmon0/pwm1}"))
+    fanmax = tonumber(conky_parse("${exec cat /sys/class/hwmon/hwmon0/pwm1_max}"))
+    fan_percent = string.format("%.2f", (fan / fanmax) * 100)
+    ct = cairo_text_extents_t:create()
+    cairo_text_extents(cr,"GPU Fan "..fan_percent.."%",ct)
+    cairo_move_to(cr,w/2-ct.width/2,h/2+ct.height/2 +60)
+    cairo_show_text(cr,"GPU Fan "..fan_percent.."%")
+    
 end
 
 function draw_widgets(cr)
@@ -119,6 +154,8 @@ function draw_widgets(cr)
 	draw_circle_background_border(cr, w, h)
 	--Draw NVIDIA
 	draw_gpu(cr, w, h)
+    --Print Stats
+    print_stats(cr, w, h)
 	
 end
 

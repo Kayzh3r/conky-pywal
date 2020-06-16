@@ -6,23 +6,23 @@ function hex2rgb(hex)
 end
 
 -- HTML colors
-color0="#2d224b"
-color1="#3A5E88"
-color2="#B05984"
-color3="#D76C84"
-color4="#4CA293"
-color5="#6AA28D"
-color6="#9EA48A"
-color7="#ebbfb9"
-color8="#a48581"
-color9="#3A5E88"
-color10="#B05984"
-color11="#D76C84"
-color12="#4CA293"
-color13="#6AA28D"
-color14="#9EA48A"
-color15="#ebbfb9"
-color66="#2d224b"
+color0="#081734"
+color1="#6D3966"
+color2="#2A536D"
+color3="#6C4D71"
+color4="#9B3C70"
+color5="#974174"
+color6="#3F7486"
+color7="#a1c5c7"
+color8="#70898b"
+color9="#6D3966"
+color10="#2A536D"
+color11="#6C4D71"
+color12="#9B3C70"
+color13="#974174"
+color14="#3F7486"
+color15="#a1c5c7"
+color66="#081734"
 t0= 1
 t0_border= 0.3
 r0, g0, b0 = hex2rgb(color0)
@@ -115,7 +115,7 @@ function draw_widgets(cr)
 	--Draw background
 	draw_circle_background(cr, w, h)
 	draw_circle_background_border(cr, w, h)
-	--Draw NVIDIA
+	--Draw battery
 	draw_battery(cr, w, h)
 	
 end
